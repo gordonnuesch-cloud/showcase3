@@ -5,3 +5,4 @@ rauchtest/
 .DS_Store
 *.log
 .vite/
+.claude/

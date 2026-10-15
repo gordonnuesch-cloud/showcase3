@@ -24,7 +24,7 @@ const nachFolge = (s, folge, reserve) => {
   return p && M.projektKosten(s, p) <= s.geld - reserve ? p : null;
 };
 /** Baut einen gueltigen Plan aus Wuenschen: offene Zimmer, Projekt, Rest Pflege. */
-function plan(s, offen, p, wahl = null, projektAnteil = 1) {
+function plan(s, offen, p, wahl = null, projektAnteil = 1, hilfe = false) {
   const t = M.tage(s, wahl);
   offen = Math.max(0, Math.min(offen, s.zimmer, t));
   let projektTage = 0;
@@ -33,7 +33,8 @@ function plan(s, offen, p, wahl = null, projektAnteil = 1) {
     projektTage = Math.min(rest, Math.floor((t - offen) * projektAnteil));
     if (p.tage === 0) projektTage = 0;
   }
-  const pl = { offen, projekt: p ? p.id : null, projektTage, pflegeTage: t - offen - projektTage };
+  const pl = { offen, projekt: p ? p.id : null, projektTage, pflegeTage: t - offen - projektTage,
+    hilfe: hilfe && M.hilfeMoeglich(s) && !s.hilfe };
   return M.planFehler(s, pl, wahl) ? M.standardPlan(s) : pl;
 }
 
@@ -51,8 +52,8 @@ const STRATEGIEN = {
     return { plan: plan(s, s.woche >= 7 ? 9 : 0, p), wahl: 0 };
   },
   "Früh öffnen, Zimmer ausbauen": (s) => {
-    const p = nachFolge(s, ["dach", "zimmer2", "hilfe", "zimmer3", "turm"], 200);
-    return { plan: plan(s, 9, p), wahl: 0 };
+    const p = nachFolge(s, ["dach", "zimmer2", "zimmer3", "turm"], 200);
+    return { plan: plan(s, 9, p, 0, 1, M.istFertig(s, "zimmer2")), wahl: 0 };
   },
   "Ausgewogen": (s) => {
     const m = moeglich(s).filter((p) => M.projektKosten(s, p) <= s.geld - 400 && p.charme > 0)
@@ -62,8 +63,8 @@ const STRATEGIEN = {
     return { plan: plan(s, offen, p, 0, 0.8), wahl: 0 };
   },
   "Planer": (s) => {
-    const p = nachFolge(s, ["laternen", "garten", "laeden", "dach", "hilfe", "zimmer2", "zimmer3", "terrasse", "fassade", "kueche", "turm"], 250);
-    return { plan: plan(s, M.charme(s) >= 26 ? (p ? 4 : 9) : 0, p), wahl: 0 };
+    const p = nachFolge(s, ["laternen", "garten", "laeden", "dach", "zimmer2", "zimmer3", "terrasse", "fassade", "kueche", "turm"], 250);
+    return { plan: plan(s, M.charme(s) >= 26 ? (p ? 4 : 9) : 0, p, 0, 1, M.istFertig(s, "dach") && s.geld > 600), wahl: 0 };
   },
   "Boutique": (s) => {
     const p = nachFolge(s, ["laternen", "garten", "laeden", "terrasse", "fassade", "kueche", "dach", "zimmer2"], 200);

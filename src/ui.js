@@ -4,7 +4,7 @@
 
 import * as M from "./modell.js";
 import { WOCHEN, REGELN, START } from "./data/saison.js";
-import { PROJEKTE } from "./data/projekte.js";
+import { PROJEKTE, HILFE } from "./data/projekte.js";
 import { Ton } from "./audio.js";
 
 const $ = (id) => document.getElementById(id);
@@ -159,8 +159,19 @@ function zeichnePlanung() {
       </div>
 
       <div class="posten">
+        <div class="postenkopf"><b>Hilfe</b><span>${HILFE.name}</span></div>
+        ${s.hilfe ? `<p class="klein">${HILFE.name} kommt jede Woche: +${REGELN.hilfeTage} Tage, ${euro(REGELN.hilfeKosten)} pro Woche.</p>`
+        : M.hilfeMoeglich(s) ? `<button class="projekt" id="hilfe" aria-pressed="${!!plan.hilfe}">
+            <span class="name">${HILFE.name} einstellen</span><span class="kosten">${euro(REGELN.hilfeKosten)} pro Woche</span>
+            <span class="wirkung">+${REGELN.hilfeTage} Tage pro Woche, ab nächster Woche</span>
+            <span class="text">${HILFE.text} Läuft bis zum Saisonende.</span></button>`
+        : `<p class="klein">${HILFE.name} aus dem Dorf würde kommen, sobald das Dach gedeckt ist: +${REGELN.hilfeTage} Tage pro Woche für ${euro(REGELN.hilfeKosten)}.</p>`}
+      </div>
+
+      <div class="posten">
         <div class="postenkopf"><b>Pflege</b><span>der Rest der Tage</span></div>
         <p class="klein">${plan.pflegeTage} ${plan.pflegeTage === 1 ? "Tag" : "Tage"}: Garten, Putzen, Kleinkram. +${REGELN.pflegeProTag} Pflege je Tag, die Woche selbst kostet ${REGELN.pflegeVerfall}.</p>
+        ${pflegeSinnvoll(v) < plan.pflegeTage ? `<p class="klein hinweis">Die Villa ist gepflegt: Mehr als ${pflegeSinnvoll(v)} ${pflegeSinnvoll(v) === 1 ? "Tag" : "Tage"} Pflege bringen diese Woche nichts. Die übrigen Tage verfallen.</p>` : ""}
       </div>
 
       <div class="vorschau" aria-live="polite">
@@ -205,8 +216,16 @@ function zeichnePlanung() {
     Ton.klick();
     planAngleichen();
   });
+  const hilfe = $("hilfe");
+  if (hilfe) hilfe.onclick = () => { plan.hilfe = !plan.hilfe; Ton.klick(); planAngleichen(); };
   $("panel").querySelectorAll('input[name="wahl"]').forEach((r) => r.onchange = () => { wahl = Number(r.value); Ton.klick(); planAngleichen(); });
   $("los").onclick = wocheLaufen;
+}
+
+/** Wie viele Pflegetage diese Woche noch etwas bringen, bis die Pflege voll ist. */
+function pflegeSinnvoll(v) {
+  const fehlt = REGELN.pflegeMax - s.pflege + REGELN.pflegeVerfall + v.naechte / REGELN.abnutzungJeNaechte;
+  return Math.max(0, Math.ceil(fehlt / REGELN.pflegeProTag));
 }
 
 function projektZeile(p, st) {
@@ -217,10 +236,9 @@ function projektZeile(p, st) {
   const wirkung = [
     p.charme ? `+${p.charme} Charme` : "",
     p.zimmer ? "+1 Zimmer" : "",
-    p.fruehstueck ? `+${REGELN.preisFruehstueck} € je Nacht` : "",
-    p.hilfe ? `+${REGELN.hilfeTage} Tage/Woche, ${REGELN.hilfeKosten} €/Woche` : ""
+    p.fruehstueck ? `+${REGELN.preisFruehstueck} € je Nacht` : ""
   ].filter(Boolean).join(" · ");
-  const preisText = st.laufend ? "bezahlt" : p.geld === 0 ? "kein Startgeld" :
+  const preisText = st.laufend ? "bezahlt" :
     rabatt ? `<s>${euro(p.geld)}</s> ${euro(kosten)}` : euro(kosten);
   return `<li>
     <button class="projekt" data-projekt="${p.id}" ${st.moeglich ? "" : "disabled"} aria-pressed="${gewaehlt}">
@@ -258,6 +276,7 @@ function zeigeBericht(b) {
     <div class="karte bericht">
       <div class="wochenkopf"><h2>Woche ${b.woche + 1} <span>vorbei</span></h2><p class="datum">${WOCHEN[b.woche]}</p></div>
       ${p ? `<div class="fertigmeldung"><p class="ey">Fertig</p><p><b>${p.name}.</b> ${fertigText(p)}</p></div>` : ""}
+      ${b.hilfe ? `<div class="fertigmeldung"><p class="ey">Ab nächster Woche</p><p><b>${HILFE.name}</b> kommt jede Woche. Zwei Tage mehr.</p></div>` : ""}
       <dl>
         <dt>Gäste</dt><dd>${b.naechte} ${b.naechte === 1 ? "Nacht" : "Nächte"}</dd>
         <dt>Einnahmen</dt><dd>${mitVorzeichen(b.einnahmen)}</dd>
@@ -279,13 +298,12 @@ function fertigText(p) {
     garten: "Die Zitronenbäume sind klein, aber sie stehen.",
     laeden: "Die persiane sind grün und schließen wieder.",
     dach: "Das Gerüst ist weg. Oben kann man wieder schlafen, sobald jemand die Zimmer herrichtet.",
-    zimmer2: "Ein Zimmer mehr, mit Blick aufs Meer.",
-    zimmer3: "Ein Zimmer mehr, über dem Garten.",
+    zimmer2: "Ab nächster Woche ein Zimmer mehr, mit Blick aufs Meer.",
+    zimmer3: "Ab nächster Woche ein Zimmer mehr, über dem Garten.",
     fassade: "Die Villa ist von unten im Dorf zu sehen. Man redet darüber.",
     terrasse: "Unter der Pergola wird abends gegessen.",
     kueche: "Morgens riecht es nach Kaffee. Die Nächte bringen mehr.",
-    turm: "Das Turmzimmer ist das erste, das gebucht wird.",
-    hilfe: "Signora Pia kommt ab jetzt jede Woche."
+    turm: "Das Turmzimmer ist das erste, das gebucht wird."
   }[p.id] || "";
 }
 

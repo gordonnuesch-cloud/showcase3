@@ -30,8 +30,8 @@ export const REGELN = {
 
 /** Schwellen der Ausgaenge. Wert = Geld + charmeWert * Charme. */
 export const SCHWELLEN = {
-  ausgebucht: { charme: 70, geld: 4500 },
-  gutGebucht: 8000,
+  ausgebucht: { charme: 68, geld: 3500 },
+  gutGebucht: 7000,
   traegtSich: 5000
 };
 

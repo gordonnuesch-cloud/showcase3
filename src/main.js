@@ -45,11 +45,12 @@ function zustand(fertig, extra = {}) {
   const s = M.neuesSpiel(1);
   s.fertig = [...fertig];
   for (const id of fertig) {
+    if (id === "hilfe") { s.hilfe = true; continue; }
     const p = M.projekt(id);
     s.projektCharme += p.charme; s.zimmer += p.zimmer || 0;
-    if (p.hilfe) s.hilfe = true;
     if (p.fruehstueck) s.fruehstueck = true;
   }
+  s.fertig = s.fertig.filter((id) => id !== "hilfe");
   return Object.assign(s, extra);
 }
 
@@ -66,7 +67,7 @@ function galerie() {
     ["Abend mit Gästen", zustand(alle, { pflege: 15, woche: 14, lichter: ["zimmer1", "zimmer2", "turm"] }), true, 6]
   ];
   for (const [, s] of stufen) if (s.fertig.includes("garten")) s.verlauf = [{ woche: 1, fertig: "garten" }];
-  document.body.innerHTML = `<main class="wrap"><h1>Villa – Galerie</h1><div class="galerie"></div></main>`;
+  document.body.innerHTML = `<main class="wrap galerieseite"><h1>Villa – Galerie</h1><div class="galerie"></div></main>`;
   const box = document.querySelector(".galerie");
   for (const [titel, s, abend, gaeste] of stufen) {
     const fig = document.createElement("figure");

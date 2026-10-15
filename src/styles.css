@@ -89,6 +89,7 @@ h1,h2{font-family:var(--font-display);font-weight:600;margin:0;letter-spacing:-.
 .projekt .wirkung{grid-column:1/-1;font-size:.84rem;color:var(--plus)}
 .projekt .text{grid-column:1/-1;font-size:.84rem;color:var(--ink-soft)}
 .fertig{font-size:.84rem}
+.hinweis{color:var(--terracotta)}
 
 .vorschau,.vorschau dl,.bericht dl,.bilanz dl{display:grid;gap:4px}
 .vorschau{background:var(--surface-2);border-radius:10px;padding:12px 14px}
@@ -119,3 +120,4 @@ dl{margin:0}
 .galerie{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:12px}
 .galerie figure{margin:0}.galerie canvas{width:100%;height:auto;display:block;border-radius:6px}
 .galerie figcaption{font-size:.85rem;margin-top:4px}
+.wrap.galerieseite{display:block}

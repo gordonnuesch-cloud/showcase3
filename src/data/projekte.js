@@ -10,7 +10,7 @@ export const PROJEKTE = [
     text: "Neue persiane in Grün statt der losen alten." },
   { id: "dach", name: "Dach decken", geld: 1100, tage: 3, charme: 6,
     text: "Ohne Dach kein oberes Stockwerk. Schaltet Zimmer und Hilfe frei." },
-  { id: "zimmer2", name: "Zimmer 2 herrichten", geld: 600, tage: 3, charme: 3, zimmer: 1, braucht: "dach",
+  { id: "zimmer2", name: "Zimmer 2 herrichten", geld: 450, tage: 3, charme: 3, zimmer: 1, braucht: "dach",
     text: "Das Zimmer mit Blick aufs Meer." },
   { id: "zimmer3", name: "Zimmer 3 herrichten", geld: 800, tage: 3, charme: 3, zimmer: 1, braucht: "dach",
     text: "Das Eckzimmer über dem Garten." },
@@ -21,7 +21,11 @@ export const PROJEKTE = [
   { id: "kueche", name: "Frühstücksküche", geld: 1000, tage: 3, charme: 4, fruehstueck: true,
     text: "Frühstück im Haus: jede Nacht bringt mehr." },
   { id: "turm", name: "Turmzimmer", geld: 1500, tage: 4, charme: 8, zimmer: 1, braucht: "dach",
-    text: "Das schönste Zimmer, und das teuerste." },
-  { id: "hilfe", name: "Hilfe aus dem Dorf", geld: 0, tage: 0, charme: 0, hilfe: true, braucht: "dach",
-    text: "Signora Pia kommt jede Woche. Zwei Tage mehr, 120 € pro Woche." }
+    text: "Das schönste Zimmer, und das teuerste." }
 ];
+
+// Hilfe ist kein Projekt, sondern eine Entscheidung neben dem Projekt:
+// Signora Pia kommt ab der Woche nach der Einstellung, jede Woche.
+export const HILFE = {
+  name: "Signora Pia", text: "Kommt jede Woche aus dem Dorf: putzt, kocht, hält den Garten."
+};

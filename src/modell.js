@@ -61,6 +61,9 @@ export function projektKosten(s, p) {
   return Math.round(p.geld * (1 - (s.ereignis?.rabatt || 0)));
 }
 
+/** Signora Pia kommt erst, wenn es oben Zimmer geben kann. */
+export const hilfeMoeglich = (s) => istFertig(s, "dach");
+
 /** Kann dieses Projekt begonnen werden - und wenn nicht, warum? */
 export function projektStatus(s, p) {
   if (istFertig(s, p.id)) return { moeglich: false, grund: "fertig" };
@@ -90,8 +93,13 @@ export function wocheBeginnen(s) {
     if (!e.braucht || istFertig(s, e.braucht)) break;
   }
   s.ereignis = e;
-  // Der Handwerker kommt spaeter: das laufende Projekt dauert laenger
-  if (e.projektPlus && s.laufend) s.laufend.rest += e.projektPlus;
+  // Der Handwerker kommt spaeter: das laufende Projekt dauert laenger -
+  // laeuft nichts, trifft es das Projekt, das diese Woche beginnt.
+  s.verzoegerung = 0;
+  if (e.projektPlus) {
+    if (s.laufend) s.laufend.rest += e.projektPlus;
+    else s.verzoegerung = e.projektPlus;
+  }
 }
 
 /** Der Vorschlag, den man mit einem Klick uebernimmt: alle Zimmer offen,
@@ -114,6 +122,7 @@ export function planFehler(s, plan, wahlIndex = null) {
     const st = projektStatus(s, projekt(plan.projekt));
     if (!st.moeglich) return st.grund;
   }
+  if (plan.hilfe && !s.hilfe && !hilfeMoeglich(s)) return "Hilfe erst, wenn das Dach gedeckt ist";
   return null;
 }
 
@@ -124,9 +133,9 @@ export function vorschau(s, plan, wahlIndex = null) {
   const p = plan.projekt ? projekt(plan.projekt) : null;
   const startet = p && s.laufend?.id !== p.id;
   const kostenProjekt = startet ? projektKosten(s, p) : 0;
-  const rest = p ? (startet ? p.tage : s.laufend.rest) : 0;
+  const rest = p ? (startet ? p.tage + (s.verzoegerung || 0) : s.laufend.rest) : 0;
   const fertig = p && plan.projektTage >= rest;
-  // Ein Projekt, das diese Woche fertig wird, wirkt erst ab naechster Woche
+  // Was diese Woche fertig wird, wirkt erst ab naechster Woche
   let naechte = plan.offen * Math.round(7 * auslastung(s));
   if (e.extraNaechte && plan.offen >= e.abZimmern) naechte += e.extraNaechte;
   const einnahmen = naechte * preis(s);
@@ -155,14 +164,25 @@ export function wocheAusfuehren(s, plan, wahlIndex = null) {
   const w = wahlVon(s, wahlIndex);
   const vorher = { geld: s.geld, charme: charme(s), zimmer: s.zimmer };
 
+  // Gaeste und Geld mit dem Stand vom Wochenbeginn. Was diese Woche fertig
+  // wird, wirkt ab naechster Woche - so stimmt die Vorschau genau.
+  const occ = auslastung(s);
+  let naechte = 0;
+  for (let i = 0; i < plan.offen; i++) {
+    naechte += Math.round(7 * Math.min(1, Math.max(0, occ + (zufall(s) - 0.5) * 0.2)));
+  }
+  if (e.extraNaechte && plan.offen >= e.abZimmern) naechte += e.extraNaechte;
+  const einnahmen = naechte * preis(s);
+  const laufend = R.fixkosten + (s.hilfe ? R.hilfeKosten : 0) + naechte * R.proNacht;
+  const sonstiges = (e.geld || 0) + (w.geld || 0);
+
   // Projekt beginnen bzw. weiterfuehren
   let fertigId = null, kostenProjekt = 0;
   if (plan.projekt) {
     const p = projekt(plan.projekt);
     if (s.laufend?.id !== p.id) {
       kostenProjekt = projektKosten(s, p);
-      s.geld -= kostenProjekt;
-      s.laufend = { id: p.id, rest: p.tage };
+      s.laufend = { id: p.id, rest: p.tage + (s.verzoegerung || 0) };
     }
     s.laufend.rest -= plan.projektTage;
     if (s.laufend.rest <= 0) {
@@ -171,35 +191,26 @@ export function wocheAusfuehren(s, plan, wahlIndex = null) {
       s.projektCharme += p.charme;
       s.zimmer += p.zimmer || 0;
       if (p.fruehstueck) s.fruehstueck = true;
-      if (p.hilfe) s.hilfe = true;
       s.laufend = null;
     }
   }
+  const eingestellt = !!plan.hilfe && !s.hilfe;
+  if (eingestellt) s.hilfe = true;
 
-  // Gaeste: je Zimmer eine Auslastung mit etwas Streuung
-  const occ = auslastung(s);
-  let naechte = 0;
-  for (let i = 0; i < plan.offen; i++) {
-    naechte += Math.round(7 * Math.min(1, Math.max(0, occ + (zufall(s) - 0.5) * 0.2)));
-  }
-  if (e.extraNaechte && plan.offen >= e.abZimmern) naechte += e.extraNaechte;
-
-  const einnahmen = naechte * preis(s);
-  const laufend = R.fixkosten + (s.hilfe ? R.hilfeKosten : 0) + naechte * R.proNacht;
-  const sonstiges = (e.geld || 0) + (w.geld || 0);
-  s.geld += einnahmen - laufend + sonstiges;
+  s.geld += einnahmen - laufend - kostenProjekt + sonstiges;
   s.gaeste += naechte;
   s.pflege = pflegeNachher(s, plan.pflegeTage, naechte, (e.pflege || 0) + (w.pflege || 0));
 
   const bericht = {
     woche: s.woche, ereignis: e.id || null, wahl: wahlIndex, plan: { ...plan },
-    naechte, einnahmen, laufend, kostenProjekt, sonstiges, fertig: fertigId,
+    naechte, einnahmen, laufend, kostenProjekt, sonstiges, fertig: fertigId, hilfe: eingestellt,
     geldVorher: vorher.geld, geld: s.geld, charmeVorher: vorher.charme, charme: charme(s),
     zimmerNeu: s.zimmer - vorher.zimmer
   };
   s.verlauf.push(bericht);
   s.woche++;
   s.ereignis = null;
+  s.verzoegerung = 0;
   if (s.geld < R.dispo) { s.pleite = true; s.ende = true; }
   if (s.woche >= ANZAHL_WOCHEN) s.ende = true;
   return bericht;
