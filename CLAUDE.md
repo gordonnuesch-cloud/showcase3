@@ -70,4 +70,6 @@ Italienische Begriffe sparsam und richtig.
 npm run build && npm run artifact
 ```
 
-`artifact.html` veröffentlichen, nicht `dist/index.html`.
+`artifact.html` veröffentlichen, nicht `dist/index.html`. Das bestehende
+Artifact wird aktualisiert, nicht neu angelegt:
+https://claude.ai/artifact/DKepLGr6uGXxiVhadXeHd8
