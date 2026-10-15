@@ -3,3 +3,6 @@
 :root[data-theme="dark"]{--paper:#1b1a1f;--ink:#efe8dc;color-scheme:dark}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:"Source Sans 3",system-ui,sans-serif}
 .wrap{max-width:1040px;margin-inline:auto;padding:16px}
+.galerie{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:12px}
+.galerie figure{margin:0}.galerie canvas{width:100%;height:auto;display:block;border-radius:6px}
+.galerie figcaption{font-size:.85rem;margin-top:4px}

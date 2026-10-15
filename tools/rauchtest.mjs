@@ -40,6 +40,13 @@ const s = await seiteOeffnen({ viewport: { width: 1100, height: 760 } });
 pruefe(await s.evaluate(() => document.documentElement.dataset.bereit === "1"), "Seite startet nicht");
 await bild(s, "01-start");
 
+// --- Villa-Galerie: alle Ausbaustufen ------------------------------------------
+const gal = await browser.newPage({ viewport: { width: 1500, height: 1500 } });
+gal.on("pageerror", (e) => fehler.push("galerie: " + e.message));
+await gal.goto(adresse.replace("?rauchtest", "?galerie"));
+await gal.waitForTimeout(500);
+await gal.screenshot({ path: `${ORDNER}/50-galerie.png`, fullPage: true });
+
 // --- Telefon ---------------------------------------------------------------
 const t = await seiteOeffnen({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 await bild(t, "90-telefon");
