@@ -1,32 +1,46 @@
 /* Hell und dunkel: Tokens auf :root, dunkel per prefers-color-scheme oder data-theme. */
+/* Sommerlicher Look: Kornblumenblau, Zitronengelb, Olivgruen, Orange, Creme.
+   Pinselschrift fuer Titel, gesperrte Versalien fuer Beschriftungen. */
 :root{
-  --paper:#f6f1e7; --surface:#fffdf8; --surface-2:#f1eadc; --ink:#2a2622; --ink-soft:#6b625a; --line:#e2d8c6;
-  --accent:#3f7a5a; --accent-ink:#fff; --terracotta:#b8583a; --lemon:#e9c43a; --minus:#a8432c; --plus:#3f7a5a;
-  --gaeste:#3f7a8f; --projekt:#b8583a; --pflege:#7a9a54;
-  --font-display:"Fraunces",Georgia,serif; --font-body:"Source Sans 3",system-ui,sans-serif;
+  --himmel:#86a6de; --paper:#86a6de; --surface:#fffaf1; --surface-2:#f6eedd; --ink:#2b3654; --ink-soft:#6b7290; --line:#eadfc9;
+  --auf-blau:#ffffff; --accent:#4e8c3c; --accent-ink:#fff; --terracotta:#e2733f; --lemon:#f7d43a; --minus:#c4502a; --plus:#3f7f34;
+  --gaeste:#5b8fd8; --projekt:#e2733f; --pflege:#7fb052; --zitrone:#f7d43a; --olive:#5b9a3c;
+  --font-display:"Dancing Script","Brush Script MT",cursive; --font-body:"Josefin Sans","Avenir Next",system-ui,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --paper:#17161b; --surface:#211f26; --surface-2:#2a2830; --ink:#efe8dc; --ink-soft:#a8a095; --line:#36333c;
-  --accent:#7fbf96; --accent-ink:#13221a; --terracotta:#e08a6a; --minus:#ef8a72; --plus:#8fd0a5;
-  --gaeste:#7fb4c8; --projekt:#e08a6a; --pflege:#a8c47e; color-scheme:dark;
+  --himmel:#1d2647; --paper:#1d2647; --surface:#262f55; --surface-2:#2e3864; --ink:#f4efe4; --ink-soft:#aab0cc; --line:#3a4573;
+  --auf-blau:#f4efe4; --accent:#7fc06a; --accent-ink:#13230f; --terracotta:#f29467; --minus:#f59a7a; --plus:#93d27c;
+  --gaeste:#8fb5ee; --projekt:#f29467; --pflege:#a5d07c; color-scheme:dark;
 }}
 :root[data-theme="dark"]{
-  --paper:#17161b; --surface:#211f26; --surface-2:#2a2830; --ink:#efe8dc; --ink-soft:#a8a095; --line:#36333c;
-  --accent:#7fbf96; --accent-ink:#13221a; --terracotta:#e08a6a; --minus:#ef8a72; --plus:#8fd0a5;
-  --gaeste:#7fb4c8; --projekt:#e08a6a; --pflege:#a8c47e; color-scheme:dark;
+  --himmel:#1d2647; --paper:#1d2647; --surface:#262f55; --surface-2:#2e3864; --ink:#f4efe4; --ink-soft:#aab0cc; --line:#3a4573;
+  --auf-blau:#f4efe4; --accent:#7fc06a; --accent-ink:#13230f; --terracotta:#f29467; --minus:#f59a7a; --plus:#93d27c;
+  --gaeste:#8fb5ee; --projekt:#f29467; --pflege:#a5d07c; color-scheme:dark;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.45}
-.wrap{max-width:1180px;margin-inline:auto;padding:16px;display:grid;gap:16px}
+.wrap{max-width:1180px;margin-inline:auto;padding:12px 16px 28px;display:grid;gap:16px}
 @media (min-width:900px){.wrap{grid-template-columns:minmax(0,1.35fr) minmax(360px,1fr);align-items:start}
   .buehne{position:sticky;top:16px}}
-h1,h2{font-family:var(--font-display);font-weight:600;margin:0;letter-spacing:-.01em}
+h1,h2{font-family:var(--font-display);font-weight:700;margin:0;letter-spacing:0;line-height:1.05}
+
+/* Seitenkopf: Schriftzug in drei Farben, darunter gesperrte Versalien */
+.kopf{position:relative;text-align:center;padding:22px 16px 4px;color:var(--auf-blau);overflow:hidden}
+.kopf h1{font-size:clamp(2.6rem,9vw,4.4rem)}
+.kopf .v1{color:#4e9a3c;text-shadow:0 2px 0 rgba(255,255,255,.35)}
+.kopf .v2{color:#fff}
+.kopf .v3{color:var(--zitrone);text-shadow:0 2px 0 rgba(43,54,84,.15)}
+.unterzeile{margin:2px 0 0;font-size:.82rem;letter-spacing:.42em;text-transform:uppercase;font-weight:600}
+.motiv{position:absolute;top:10px;width:clamp(90px,16vw,170px);height:auto}
+.motiv-links{left:max(8px,calc(50% - 560px))}.motiv-rechts{right:max(8px,calc(50% - 560px))}
+/* Telefon: Motive klein in die oberen Ecken, der Schriftzug darunter */
+@media (max-width:600px){.kopf{padding-top:40px}.motiv{width:62px;top:2px}.unterzeile{font-size:.68rem;letter-spacing:.3em}}
 
 /* Buehne: die Villa und darunter die Kennzahlen */
 .buehne{display:grid;gap:8px}
 .leinwand{position:relative}
-#villa{width:100%;aspect-ratio:16/10;display:block;border-radius:10px;background:#cfe0e6}
+#villa{width:100%;aspect-ratio:16/10;display:block;border-radius:18px;background:#dfe8f6;box-shadow:0 10px 30px -18px rgba(30,40,80,.5)}
 .tonknopf{position:absolute;right:8px;top:8px;font:inherit;font-size:.78rem;background:rgba(255,253,248,.82);color:#2a2622;
   border:1px solid rgba(0,0,0,.08);border-radius:999px;padding:4px 10px;cursor:pointer}
 /* Karten blenden weich ein, wenn die Woche wechselt */
@@ -34,16 +48,16 @@ h1,h2{font-family:var(--font-display);font-weight:600;margin:0;letter-spacing:-.
 @keyframes einblenden{from{opacity:0;transform:translateY(6px)}}
 .karte.bleibt{animation:none}
 .kennzahlen{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0}
-.kennzahlen div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
-.kennzahlen dt{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft)}
+.kennzahlen div{background:var(--surface);border:0;border-radius:14px;padding:7px 11px}
+.kennzahlen dt{font-size:.68rem;text-transform:uppercase;letter-spacing:.16em;color:var(--ink-soft);font-weight:600}
 .kennzahlen dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums;font-size:1.05rem}
 .minus{color:var(--minus)}
 
 /* Panel und Karten */
-.karte{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:14px}
-.ey{margin:0;font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--terracotta);font-weight:600}
+.karte{background:var(--surface);border:0;border-radius:18px;padding:18px;display:grid;gap:14px;box-shadow:0 10px 30px -18px rgba(30,40,80,.45)}
+.ey{margin:0;font-size:.72rem;text-transform:uppercase;letter-spacing:.2em;color:var(--terracotta);font-weight:700}
 .klein{margin:0;font-size:.86rem;color:var(--ink-soft)}
-.titelkarte h2{font-size:clamp(1.8rem,5vw,2.4rem)}
+.titelkarte h2{font-size:clamp(2.1rem,6vw,2.8rem);color:var(--accent)}
 .titelkarte p{margin:0}
 .zeile{display:flex;gap:8px;flex-wrap:wrap}
 .knopf{font:inherit;font-weight:600;background:var(--accent);color:var(--accent-ink);border:1px solid var(--accent);border-radius:999px;padding:9px 18px;cursor:pointer}
@@ -52,7 +66,7 @@ h1,h2{font-family:var(--font-display);font-weight:600;margin:0;letter-spacing:-.
 .knopf:focus-visible,.projekt:focus-visible,.stepper button:focus-visible{outline:2px solid var(--terracotta);outline-offset:2px}
 
 .wochenkopf{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
-.wochenkopf h2{font-size:1.5rem}.wochenkopf h2 span{font-size:1rem;color:var(--ink-soft);font-weight:500}
+.wochenkopf h2{font-size:2rem;color:var(--accent)}.wochenkopf h2 span{font-family:var(--font-body);font-size:.9rem;color:var(--ink-soft);font-weight:400}
 .datum{margin:0;color:var(--ink-soft);font-variant-numeric:tabular-nums}
 .ereignis{background:var(--surface-2);border-radius:10px;padding:12px 14px;display:grid;gap:6px}
 .ereignis p{margin:0}
@@ -105,14 +119,14 @@ dl{margin:0}
 .vorschau dd,.bericht dd,.bilanz dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
 .summe{font-weight:600;border-top:1px solid var(--line);padding-top:4px}
 .warnung{margin:6px 0 0;color:var(--minus);font-size:.88rem}
-.fertigmeldung{background:var(--surface-2);border-left:3px solid var(--lemon);border-radius:8px;padding:10px 12px}
+.fertigmeldung{background:var(--surface-2);border-left:4px solid var(--zitrone);border-radius:10px;padding:10px 12px}
 .fertigmeldung p{margin:0}
 .kommentar{margin:0;font-style:italic;color:var(--ink-soft)}
-.bilanz h2{font-size:clamp(1.5rem,4.5vw,2rem)}
+.bilanz h2{font-size:clamp(1.9rem,5.5vw,2.6rem);color:var(--accent)}
 .bilanz p{margin:0}
 .stufen{display:flex;gap:6px;list-style:none;padding:0;margin:0}
 .stufen li{flex:1;height:8px;border-radius:4px;background:var(--line)}
-.stufen li[data-an="1"]{background:var(--terracotta)}
+.stufen li[data-an="1"]{background:var(--zitrone)}
 
 /* Telefon: Kennzahlen kompakter */
 @media (max-width:480px){

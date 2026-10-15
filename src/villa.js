@@ -9,17 +9,19 @@
 
 const W = 800, H = 500, ZOOM = 1.25;
 
+// Sommerillustration: Kornblumenhimmel, satte Flaechen, keine Konturen,
+// keine harten Schatten. Zypressen, Zitronen, Sternblueten, weisse Wellen.
 const P = {
-  himmelOben: "#a9cfe0", himmelUnten: "#f3e7cf", abendOben: "#3d4a72", abendUnten: "#e79a6a",
-  meer: "#4a8aa6", meerAbend: "#3a5a7a", fern: "#9ab0a0", fernAbend: "#5c6474",
-  huegel: "#93a46a", huegelDunkel: "#7d8f59", erde: "#b89a6c", mauer: "#c9b79a", mauerFuge: "#a8957a",
-  olive: "#7b8a58", oliveHell: "#93a26c", stamm: "#6b5440", zypresse: "#3f5a3c",
-  putzAlt: "#c9bfae", putzFleck: "#b2a793", ocker: "#e5ad6c", ockerSchatten: "#cf9558", rahmen: "#f3e6cf",
-  ziegel: "#c0623f", ziegelDunkel: "#9e4a30", plane: "#5f86a6", geruest: "#8a7a62",
-  laden: "#4f7f5b", ladenHell: "#6a9a74", ladenAlt: "#8b8170", glas: "#7c9fae", glasAbend: "#2c3446", licht: "#ffd98a",
-  holz: "#7a5a3a", stein: "#d8ccb6", zitrone: "#f2cf3e", blatt: "#4f7a3f", blattHell: "#6a9450",
-  unkraut: "#8a8a4a", bluete: ["#d9534f", "#f2a7b5", "#f6f0e6", "#e7b84a"], wein: "#5a7d3c",
-  schatten: "rgba(40,30,20,.18)", figur: ["#3f6f8f", "#b5543c", "#e0c070", "#6b8f5a", "#8a6aa0", "#2f4a5a"]
+  himmelOben: "#86a6de", himmelUnten: "#dfe8f6", abendOben: "#2c3a6e", abendUnten: "#f0a77a",
+  meer: "#5b8fd8", meerAbend: "#33508a", fern: "#a9c48a", fernAbend: "#5d6a8a",
+  huegel: "#a5c46a", huegelDunkel: "#8fb257", erde: "#e2c38f", mauer: "#f1e3c6", mauerFuge: "#d9c49e",
+  olive: "#6f9a45", oliveHell: "#8fb85a", stamm: "#7a5a40", zypresse: "#2f6b3e", zypresseHell: "#3f8a4e",
+  putzAlt: "#e3d6c2", putzFleck: "#cbbba3", ocker: "#f2b56b", ockerSchatten: "#e29e55", rahmen: "#fff4e0",
+  ziegel: "#e2733f", ziegelDunkel: "#c45c2e", plane: "#6f9bd8", geruest: "#b08a5a",
+  laden: "#4f9a62", ladenHell: "#6cb57c", ladenAlt: "#b3a68f", glas: "#a9c7ee", glasAbend: "#2a3560", licht: "#ffd76a",
+  holz: "#9a6a42", stein: "#f1e6d2", zitrone: "#f7d43a", blatt: "#4e8c3c", blattHell: "#72ae4e",
+  unkraut: "#9aa54e", bluete: ["#f4a9a8", "#fff3e2", "#f7d43a", "#f8c9c3"], wein: "#5f9a3c",
+  schatten: "rgba(40,50,90,.12)", figur: ["#3f6fbf", "#e2733f", "#f7d43a", "#4e8c3c", "#d97a9a", "#2f4a8a"]
 };
 
 const fertig = (s, id) => s.fertig.includes(id);
@@ -81,11 +83,45 @@ function himmel(g, abend, r) {
   kreis(g, 660, abend ? 182 : 128, abend ? 18 : 15);
   // Meer bis zum Horizont, ferne Landzunge mit Zypressen
   g.fillStyle = abend ? P.meerAbend : P.meer; g.fillRect(0, 186, W, 40);
+  g.strokeStyle = abend ? "rgba(255,255,255,.35)" : "rgba(255,255,255,.85)"; g.lineWidth = 1.6; g.lineCap = "round";
+  for (const [wx, wy] of [[40, 200], [130, 212], [300, 198], [470, 208], [560, 196], [700, 210], [760, 199]]) welle(g, wx, wy, 26);
   g.fillStyle = abend ? P.fernAbend : P.fern;
   g.beginPath(); g.moveTo(0, 190); g.bezierCurveTo(90, 160, 170, 168, 240, 190); g.closePath(); g.fill();
   g.beginPath(); g.moveTo(560, 190); g.bezierCurveTo(660, 172, 740, 158, 800, 168); g.lineTo(800, 190); g.closePath(); g.fill();
   g.fillStyle = abend ? "#3c4a4a" : P.zypresse;
   for (const x of [70, 82, 140, 690, 705, 760]) { g.beginPath(); g.ellipse(x, 172, 3, 11, 0, 0, 7); g.fill(); }
+}
+
+/** Eine weisse Wellenlinie, wie mit dem Pinsel gezogen. */
+function welle(g, x, y, b) {
+  g.beginPath(); g.moveTo(x, y);
+  g.bezierCurveTo(x + b * 0.25, y - 4, x + b * 0.5, y - 4, x + b * 0.5, y);
+  g.bezierCurveTo(x + b * 0.5, y + 3, x + b * 0.75, y - 4, x + b, y - 1);
+  g.stroke();
+}
+
+function zypresse(g, x, yBoden, h) {
+  const b = h * 0.13;
+  g.fillStyle = P.zypresse;
+  g.beginPath(); g.moveTo(x, yBoden - h);
+  g.bezierCurveTo(x + b * 1.3, yBoden - h * 0.7, x + b, yBoden - h * 0.15, x + b * 0.5, yBoden);
+  g.lineTo(x - b * 0.5, yBoden);
+  g.bezierCurveTo(x - b, yBoden - h * 0.15, x - b * 1.3, yBoden - h * 0.7, x, yBoden - h);
+  g.fill();
+  g.fillStyle = P.zypresseHell;
+  g.beginPath(); g.moveTo(x - 1, yBoden - h * 0.92);
+  g.bezierCurveTo(x - b * 0.7, yBoden - h * 0.6, x - b * 0.6, yBoden - h * 0.2, x - b * 0.25, yBoden - 4);
+  g.lineTo(x - 1, yBoden - 6); g.closePath(); g.fill();
+}
+
+/** Fuenfblaettrige Sternbluete mit gelber Mitte. */
+function sternbluete(g, x, y, r, farbe) {
+  g.fillStyle = farbe;
+  for (let i = 0; i < 5; i++) {
+    const a = i * Math.PI * 2 / 5 - Math.PI / 2;
+    g.beginPath(); g.ellipse(x + Math.cos(a) * r * 0.7, y + Math.sin(a) * r * 0.7, r * 0.55, r * 0.3, a, 0, 7); g.fill();
+  }
+  g.fillStyle = "#f2b33a"; kreis(g, x, y, r * 0.28);
 }
 
 function landschaft(g, abend, r) {
@@ -96,6 +132,14 @@ function landschaft(g, abend, r) {
     g.fillStyle = P.mauer; g.fillRect(x0, y, x1 - x0, 7);
     g.fillStyle = P.mauerFuge;
     for (let x = x0 + 6; x < x1; x += 14) g.fillRect(x, y + 3, 6, 1.2);
+  }
+  // Zypressen rahmen die Villa, wie auf jeder Postkarte von der Riviera
+  for (const [x, y, h] of [[214, 404, 150], [234, 404, 120], [604, 330, 130], [628, 330, 104], [770, 300, 90]]) zypresse(g, x, y, h);
+  // Sternblueten im Gras
+  for (let i = 0; i < 26; i++) {
+    const x = r() * W, y = 330 + r() * 170;
+    if (x > 250 && x < 600 && y < 410) continue;
+    sternbluete(g, x, y, 3.2 + r() * 2.2, P.bluete[i % 2 === 0 ? 0 : 1]);
   }
   // Olivenbaeume auf den Terrassen
   for (const [x, y, k] of [[40, 258, 1], [110, 256, 0.9], [175, 260, 0.8], [60, 296, 1.1], [150, 298, 0.9], [30, 334, 1], [120, 336, 1.2], [660, 266, 0.9], [740, 264, 1]]) olive(g, x, y, k, r);
@@ -121,8 +165,8 @@ const FENSTER = {
 function haus(g, s, abend) {
   const { x, y, w, h } = HAUS;
   const fassade = fertig(s, "fassade");
-  // Schatten nach rechts unten, wie im Krimi - der lange Schatten ist Stil
-  g.fillStyle = P.schatten; g.fillRect(x + 14, y + 14, w, h);
+  // Nur ein weicher Schatten am Boden - flache Illustration, kein Schlagschatten
+  g.fillStyle = P.schatten; g.beginPath(); g.ellipse(x + w / 2, y + h + 2, w * 0.62, 9, 0, 0, 7); g.fill();
   // Wand
   g.fillStyle = fassade ? P.ocker : P.putzAlt; g.fillRect(x, y, w, h);
   if (fassade) {
@@ -254,7 +298,6 @@ function tuer(g, s, abend) {
 function turm(g, s, abend) {
   const x = 520, y = 130, w = 62, h = 270;
   const ok = fertig(s, "turm"), fassade = fertig(s, "fassade");
-  g.fillStyle = P.schatten; g.fillRect(x + 14, y + 14, w, h);
   g.fillStyle = fassade ? P.ockerSchatten : P.putzAlt; g.fillRect(x, y, w, h);
   if (fassade) { g.fillStyle = P.rahmen; g.fillRect(x, y + 180, w, 5); }
   // Dach des Turms: kleines Zeltdach, kaputt oder neu
@@ -380,11 +423,12 @@ function figur(g, x, y, farbe, sitzt) {
 }
 
 function bewegtes(g, s, abend, t, gaeste) {
-  // Glitzern auf dem Meer
-  for (let i = 0; i < 9; i++) {
-    const p = (t * 0.12 + i * 0.37) % 1, a = Math.sin(p * Math.PI);
-    g.fillStyle = `rgba(255,255,255,${(abend ? 0.25 : 0.5) * a})`;
-    g.fillRect((i * 97 + p * 30) % W, 192 + (i % 4) * 7, 12 + a * 8, 1.4);
+  // Wellen, die langsam auftauchen und wieder vergehen
+  g.lineWidth = 1.4; g.lineCap = "round";
+  for (let i = 0; i < 6; i++) {
+    const p = (t * 0.08 + i * 0.37) % 1, a = Math.sin(p * Math.PI);
+    g.strokeStyle = `rgba(255,255,255,${(abend ? 0.3 : 0.7) * a})`;
+    welle(g, (i * 137 + p * 40) % W, 194 + (i % 3) * 9, 18);
   }
   // Rauch aus dem Schornstein, wenn die Kueche laeuft
   if (fertig(s, "kueche")) for (let i = 0; i < 5; i++) {

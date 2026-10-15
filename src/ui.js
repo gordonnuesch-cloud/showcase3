@@ -51,10 +51,10 @@ function titel(weiterspielen) {
   $("panel").innerHTML = `
     <div class="karte titelkarte">
       <p class="ey">Ligurien, oberhalb von San Martino</p>
-      <h2>Villa dei Limoni</h2>
+      <h2>Sechzehn Wochen bis Ferragosto</h2>
       <p>Geerbt von einer Großtante, die man zweimal im Leben gesehen hat. Das Dach ist undicht,
          der Garten verwildert, ein Zimmer ist bewohnbar. Auf dem Konto liegen ${euro(START.geld)}.</p>
-      <p>Sechzehn Wochen bis Ferragosto. Danach zeigt sich, ob die Villa bleibt.</p>
+      <p>Danach zeigt sich, ob die Villa bleibt.</p>
       <div class="zeile">
         ${weiterspielen ? `<button class="knopf" id="weiter">Weiterspielen · Woche ${s.woche + 1}</button>
           <button class="knopf leise" id="neu">Neue Saison</button>`
