@@ -21,6 +21,7 @@ function spielen() {
   const ruhig = matchMedia("(prefers-reduced-motion: reduce)");
 
   UI.starten();
+  UI.tonSchalter();
   let zuletzt = 0;
   const schleife = (ts) => {
     const dt = Math.min(0.1, (ts - zuletzt) / 1000 || 0); zuletzt = ts;

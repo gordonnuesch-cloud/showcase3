@@ -25,7 +25,14 @@ h1,h2{font-family:var(--font-display);font-weight:600;margin:0;letter-spacing:-.
 
 /* Buehne: die Villa und darunter die Kennzahlen */
 .buehne{display:grid;gap:8px}
+.leinwand{position:relative}
 #villa{width:100%;aspect-ratio:16/10;display:block;border-radius:10px;background:#cfe0e6}
+.tonknopf{position:absolute;right:8px;top:8px;font:inherit;font-size:.78rem;background:rgba(255,253,248,.82);color:#2a2622;
+  border:1px solid rgba(0,0,0,.08);border-radius:999px;padding:4px 10px;cursor:pointer}
+/* Karten blenden weich ein, wenn die Woche wechselt */
+.karte{animation:einblenden .35s ease-out}
+@keyframes einblenden{from{opacity:0;transform:translateY(6px)}}
+.karte.bleibt{animation:none}
 .kennzahlen{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0}
 .kennzahlen div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
 .kennzahlen dt{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft)}

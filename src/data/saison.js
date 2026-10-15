@@ -14,7 +14,7 @@ export const START = { geld: 1800, pflege: 4, zimmer: 1 };
 
 export const REGELN = {
   tage: 6,                 // Arbeitstage pro Woche
-  fixkosten: 160,          // pro Woche: Strom, Wasser, Versicherung
+  fixkosten: 150,          // pro Woche: Strom, Wasser, Versicherung
   proNacht: 12,            // Waesche, Fruehstueck
   dispo: -800,             // darunter muss verkauft werden
   charmeBasis: 10,
@@ -30,8 +30,8 @@ export const REGELN = {
 
 /** Schwellen der Ausgaenge. Wert = Geld + charmeWert * Charme. */
 export const SCHWELLEN = {
-  ausgebucht: { charme: 68, geld: 3500 },
-  gutGebucht: 7000,
+  ausgebucht: { charme: 70, geld: 4500 },
+  gutGebucht: 7500,
   traegtSich: 5000
 };
 

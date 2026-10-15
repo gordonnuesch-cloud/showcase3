@@ -18,6 +18,7 @@ const ansichtZustand = { s: null, abend: 0, abendZiel: 0, gaeste: 0 };
 export const ansicht = () => ansichtZustand;
 
 let s = null, plan = null, wahl = null, phase = "titel", letzterBericht = null, spaeterOffen = false;
+let zuletztEingeblendet = "";
 
 // --- Speicher (nur Bequemlichkeit: ein Neuladen kostet die Saison nicht) -----
 
@@ -76,6 +77,7 @@ function planen() {
   phase = "planen";
   ansichtZustand.abendZiel = dunkel() ? 1 : 0;
   ansichtZustand.gaeste = 0;
+  Ton.stimmung(s.woche, dunkel());
   s.lichter = [];
   wahl = s.ereignis?.wahl ? 0 : null;
   plan = M.standardPlan(s);
@@ -198,6 +200,11 @@ function zeichnePlanung() {
       </div>
     </div>`;
 
+  // Nur beim Wochenwechsel einblenden, nicht bei jedem Klick auf + oder -
+  const kartenSchluessel = "planen" + s.woche;
+  if (kartenSchluessel === zuletztEingeblendet) $("panel").querySelector(".karte").classList.add("bleibt");
+  zuletztEingeblendet = kartenSchluessel;
+
   // Die Gruppe "Spaeter" bleibt offen, wenn man sie einmal geoeffnet hat
   const spaeter = $("panel").querySelector(".spaeter");
   if (spaeter) { spaeter.open = spaeterOffen; spaeter.ontoggle = () => (spaeterOffen = spaeter.open); }
@@ -262,6 +269,7 @@ function wocheLaufen() {
   s.lichter = zimmerVorher.slice(0, belegt);
   ansichtZustand.abendZiel = 1;
   ansichtZustand.gaeste = Math.min(8, Math.round(bericht.naechte / 3));
+  Ton.stimmung(s.woche, true);
   Ton.wocheVorbei(bericht);
   phase = "bericht";
   zeigeBericht(bericht);
@@ -346,6 +354,15 @@ function bilanz() {
 }
 
 // --- Kopfzeile mit Kennzahlen ----------------------------------------------------
+
+let tonAn = true;
+export function tonSchalter() {
+  const b = $("tonknopf");
+  b.onclick = () => {
+    tonAn = !tonAn; Ton.start(); Ton.an(tonAn);
+    b.textContent = tonAn ? "Ton aus" : "Ton an"; b.setAttribute("aria-pressed", String(!tonAn));
+  };
+}
 
 function kennzahlen() {
   $("kennzahlen").innerHTML = `

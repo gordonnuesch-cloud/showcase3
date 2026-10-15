@@ -8,7 +8,7 @@ export const PROJEKTE = [
     text: "Beete, Kräuter, zwei junge Zitronenbäume." },
   { id: "laeden", name: "Fensterläden", geld: 250, tage: 2, charme: 5,
     text: "Neue persiane in Grün statt der losen alten." },
-  { id: "dach", name: "Dach decken", geld: 1100, tage: 3, charme: 6,
+  { id: "dach", name: "Dach decken", geld: 1000, tage: 3, charme: 6,
     text: "Ohne Dach kein oberes Stockwerk. Schaltet Zimmer und Hilfe frei." },
   { id: "zimmer2", name: "Zimmer 2 herrichten", geld: 450, tage: 3, charme: 3, zimmer: 1, braucht: "dach",
     text: "Das Zimmer mit Blick aufs Meer." },
