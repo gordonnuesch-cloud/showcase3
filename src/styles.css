@@ -1,0 +1,5 @@
+:root{--paper:#f6f1e7;--ink:#2a2622;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#1b1a1f;--ink:#efe8dc;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#1b1a1f;--ink:#efe8dc;color-scheme:dark}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Source Sans 3",system-ui,sans-serif}
+.wrap{max-width:1040px;margin-inline:auto;padding:16px}
