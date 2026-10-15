@@ -25,7 +25,7 @@ const P = {
 const fertig = (s, id) => s.fertig.includes(id);
 const laeuft = (s, id) => s.laufend?.id === id;
 
-let cache = { schluessel: "", c: null };
+const cache = new Map();   // Tag und Abend liegen gleichzeitig bereit
 
 /** Schluessel aller Zustaende, die das gebackene Bild veraendern. */
 function schluessel(s, abend) {
@@ -424,15 +424,20 @@ function bewegtes(g, s, abend, t, gaeste) {
 export function villaZeichnen(g, breite, hoehe, s, opt = {}) {
   const abend = !!opt.abend, t = opt.t || 0;
   const key = schluessel(s, abend) + "|" + (s.lichter || []).join(",");
-  if (cache.schluessel !== key) cache = { schluessel: key, c: backen(s, abend) };
+  if (!cache.has(key)) {
+    if (cache.size > 6) cache.delete(cache.keys().next().value);
+    cache.set(key, backen(s, abend));
+  }
   // "cover" mit etwas Zoom auf die Villa: Sie ist die Hauptfigur, die
   // Landschaft ist Rahmen. Unten bleibt der Weg im Bild.
   const k = Math.max(breite / W, hoehe / H) * ZOOM;
   const mx = 440, unten = H;
   g.save();
   g.setTransform(k, 0, 0, k, breite / 2 - mx * k, hoehe - unten * k);
-  g.drawImage(cache.c, 0, 0, W, H);
+  g.globalAlpha = opt.deckkraft ?? 1;
+  g.drawImage(cache.get(key), 0, 0, W, H);
   bewegtes(g, s, abend, t, opt.gaeste || 0);
+  g.globalAlpha = 1;
   g.restore();
 }
 

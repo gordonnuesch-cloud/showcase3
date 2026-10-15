@@ -35,10 +35,41 @@ async function seiteOeffnen(optionen) {
 }
 const bild = (seite, name) => seite.screenshot({ path: `${ORDNER}/${name}.png` });
 
-// --- Desktop ---------------------------------------------------------------
-const s = await seiteOeffnen({ viewport: { width: 1100, height: 760 } });
-pruefe(await s.evaluate(() => document.documentElement.dataset.bereit === "1"), "Seite startet nicht");
-await bild(s, "01-start");
+// --- Desktop: eine ganze Saison über die Oberfläche ----------------------------
+const zustand = (seite) => seite.evaluate(() => {
+  const s = window.__rauchtest.spiel();
+  return { woche: s.woche, geld: s.geld, phase: window.__rauchtest.phase(), ende: s.ende, fertig: s.fertig.length };
+});
+async function saison(seite, name, mitProjekt) {
+  await seite.evaluate(() => localStorage.clear());
+  await seite.reload(); await seite.clock.runFor(600);
+  await bild(seite, `${name}-01-titel`);
+  await seite.click("#neu"); await seite.clock.runFor(800);
+  if (mitProjekt) {
+    await seite.click('[data-projekt="laternen"]'); await seite.clock.runFor(200);
+  }
+  await bild(seite, `${name}-02-planen`);
+  for (let w = 0; w < 16; w++) {
+    const z = await zustand(seite);
+    if (z.ende) break;
+    pruefe(z.phase === "planen", `${name}: Woche ${w + 1} nicht in der Planung, sondern ${z.phase}`);
+    await seite.click("#los"); await seite.clock.runFor(1500);
+    if (w === 0) await bild(seite, `${name}-03-bericht`);
+    await seite.click("#weiter"); await seite.clock.runFor(800);
+  }
+  const z = await zustand(seite);
+  pruefe(z.phase === "bilanz", `${name}: Saison endet nicht in der Bilanz (${z.phase}, Woche ${z.woche})`);
+  await bild(seite, `${name}-04-bilanz`);
+  return z;
+}
+const s = await seiteOeffnen({ viewport: { width: 1200, height: 860 } });
+const z1 = await saison(s, "10-desktop", true);
+console.log(`Desktop: Woche ${z1.woche}, Geld ${Math.round(z1.geld)}, Projekte ${z1.fertig}`);
+
+// --- Dunkelmodus ------------------------------------------------------------
+const d = await seiteOeffnen({ viewport: { width: 1200, height: 860 }, colorScheme: "dark" });
+await d.click("#neu"); await d.clock.runFor(1500);
+await bild(d, "20-dunkel-planen");
 
 // --- Villa-Galerie: alle Ausbaustufen ------------------------------------------
 const gal = await browser.newPage({ viewport: { width: 1500, height: 1500 } });
@@ -49,7 +80,10 @@ await gal.screenshot({ path: `${ORDNER}/50-galerie.png`, fullPage: true });
 
 // --- Telefon ---------------------------------------------------------------
 const t = await seiteOeffnen({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-await bild(t, "90-telefon");
+await t.tap("#neu"); await t.clock.runFor(800);
+await t.screenshot({ path: `${ORDNER}/90-telefon-planen.png`, fullPage: true });
+await t.tap("#los"); await t.clock.runFor(1500);
+await bild(t, "91-telefon-bericht");
 
 // --- Übersicht -------------------------------------------------------------
 const namen = readdirSync(ORDNER).filter((n) => n.endsWith(".png")).sort();
